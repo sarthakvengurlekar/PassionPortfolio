@@ -8,6 +8,8 @@ import ProjectsSection from './components/ProjectSection'
 import Footer from './components/Footer'
 import Section from './components/Section'
 import TechStack from './components/TechStack'
+import JournalSection from './components/JournalSection'
+
 
 function MyButton() {
   return (
@@ -107,6 +109,10 @@ function App() {
         <div className="pixel-divider"></div>
 
         <ProjectsSection />
+
+        <div className="pixel-divider"></div>
+
+        <JournalSection />
 
         <div className="pixel-divider"></div>
 
