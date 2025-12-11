@@ -1,4 +1,3 @@
-
 /* src/App.css */
 
 * {
@@ -14,8 +13,15 @@ body {
   color: #e5e7eb;
 }
 
+/* Make root app span full width */
 .app {
   min-height: 100vh;
+  width: 100%;
+}
+
+/* Ensure main content can stretch full width */
+main {
+  width: 100%;
 }
 
 /* Navigation */
@@ -49,13 +55,13 @@ body {
   opacity: 1;
 }
 
-/* Hero section */
+/* Hero section – full width with side padding */
 .hero {
   padding: 4rem 6vw 3rem;
-  max-width: 900px;
-  margin: 0 auto;
+  margin: 0;          /* no centering box */
 }
 
+/* Hero typography */
 .hero-intro {
   font-size: 0.9rem;
   text-transform: uppercase;
@@ -73,7 +79,49 @@ body {
 .hero-title {
   font-size: 1.3rem;
   color: #9ca3af;
+  margin-bottom: 1rem;
+}
+
+.hero-subtitle {
+  font-size: 1rem;
+  color: #a5b4fc;
+  margin-bottom: 0.4rem;
+}
+
+.hero-meta {
+  font-size: 0.9rem;
+  color: #9ca3af;
+  margin-bottom: 1rem;
+}
+
+.hero-meta a {
+  color: #a5b4fc;
+  text-decoration: none;
+}
+
+.hero-meta a:hover {
+  text-decoration: underline;
+}
+
+.hero-links {
+  font-size: 0.9rem;
+  color: #9ca3af;
   margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.hero-links a {
+  color: #e5e7eb;
+  text-decoration: none;
+  opacity: 0.85;
+}
+
+.hero-links a:hover {
+  opacity: 1;
+  text-decoration: underline;
 }
 
 .hero-text {
@@ -110,11 +158,10 @@ body {
   color: #e5e7eb;
 }
 
-/* Generic section styling */
+/* Generic section styling – full width with side padding */
 .section {
-  padding: 3rem 6vw;
-  max-width: 900px;
-  margin: 0 auto;
+  padding: 4rem 6vw;
+  margin: 0;  /* no max-width box */
   border-top: 1px solid rgba(148, 163, 184, 0.15);
 }
 
@@ -125,21 +172,53 @@ body {
 
 .section p {
   color: #d1d5db;
-  line-height: 1.6;
+  line-height: 1.7;
+  margin-bottom: 0.9rem;
+}
+
+.section p:last-child {
+  margin-bottom: 0;
+}
+
+/* Extra vertical separation between sections */
+.section + .section {
+  margin-top: 2.5rem;
 }
 
 /* Experience */
-.experience-list {
-  list-style: none;
-  margin-top: 1rem;
+
+.experience-item {
+  padding: 1.8rem 0;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.25);
 }
 
-.experience-list li {
-  margin-bottom: 1.5rem;
+.experience-item:first-child {
+  padding-top: 0.5rem;
 }
 
-.experience-list h3 {
+.experience-item:last-child {
+  border-bottom: none;
+}
+
+.experience-item h3 {
   font-size: 1.1rem;
+  margin-bottom: 0.3rem;
+}
+
+.experience-meta {
+  font-size: 0.9rem;
+  color: #9ca3af;
+  margin-bottom: 0.9rem;
+}
+
+.experience-item ul {
+  padding-left: 1.4rem;
+  margin: 0;
+}
+
+.experience-item li {
+  margin-bottom: 0.55rem;
+  line-height: 1.7;
 }
 
 /* Projects */
@@ -159,6 +238,43 @@ body {
 
 .project-card h3 {
   margin-bottom: 0.5rem;
+}
+
+/* Tech stack logo grid */
+
+.section-intro {
+  margin-bottom: 1.5rem;
+  max-width: 650px;
+}
+
+.tech-logo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.tech-logo-card {
+  border-radius: 0.9rem;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  padding: 1.1rem 0.9rem;
+  background: radial-gradient(circle at top left, #111827, #020617);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+}
+
+.tech-logo-card img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+.tech-logo-card span {
+  font-size: 0.9rem;
+  color: #e5e7eb;
 }
 
 /* Contact */
@@ -184,7 +300,7 @@ body {
 /* Small screens */
 @media (max-width: 640px) {
   .hero {
-    padding-top: 3rem;
+    padding: 3rem 6vw 2.5rem;
   }
 
   .hero-name {

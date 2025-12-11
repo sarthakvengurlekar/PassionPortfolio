@@ -7,12 +7,13 @@ import Hero from './components/Hero'
 import ProjectsSection from './components/ProjectSection'
 import Footer from './components/Footer'
 import Section from './components/Section'
+import TechStack from './components/TechStack'
 
 function MyButton() {
   return (
     <button>I am a button</button>
   )
-  
+
 }
 
 function App() {
@@ -23,6 +24,8 @@ function App() {
       <main>
         <Hero />
 
+        <TechStack />
+
         {/* About section */}
         <Section id="about" title="About">
           <p>
@@ -32,16 +35,73 @@ function App() {
             games, tools, and experiments.
           </p>
         </Section>
-          
-        {/* Experience section */}
-        <Section id="experience" className="section">
-          <ul classname="experience-list">
-            <li>
-              <h3>Software Engineer @ WOLFFKRAN</h3>
-              <p>Fill this later...</p>
-            </li>
-          </ul>
+
+        <Section id="experience" title="Experience">
+          <div className="experience-item">
+            <h3>Backend Software Engineer – R&amp;D · WOLFFKRAN</h3>
+            <p className="experience-meta">Dubai, UAE · Oct 2025 – Present</p>
+            <ul>
+              <li>
+                Designing telemetry and IoT backend systems for tower cranes using C#, Node.js, and TypeScript.
+              </li>
+              <li>
+                Integrating PLC and sensor data into centralized monitoring and health dashboards.
+              </li>
+              <li>
+                Building REST APIs and data pipelines on top of MongoDB, MySQL, and InfluxDB.
+              </li>
+            </ul>
+          </div>
+
+          <div className="experience-item">
+            <h3>Software Developer · VJTI</h3>
+            <p className="experience-meta">Feb 2024 – Mar 2025</p>
+            <ul>
+              <li>
+                Improved CerebralZip&apos;s UI with React + D3, increasing engagement by ~30%.
+              </li>
+              <li>
+                Built Java microservices for a SOC monitoring OT devices, deployed via Docker + Kubernetes.
+              </li>
+              <li>
+                Designed relational schemas in SQL Server/PostgreSQL and tuned queries for lower latency.
+              </li>
+            </ul>
+          </div>
+
+          <div className="experience-item">
+            <h3>Associate Software Engineer · Capgemini (HPE)</h3>
+            <p className="experience-meta">Chicago, IL · May 2021 – Mar 2023</p>
+            <ul>
+              <li>
+                Developed data-fabric microservices with Java/Spring backed by Oracle.
+              </li>
+              <li>
+                Managed MapR and Spectrum Scale clusters with Helm, Docker, and AWS.
+              </li>
+              <li>
+                Set up CI/CD with Jenkins + Argo CD, and automated testing with Python/ROBOT.
+              </li>
+            </ul>
+          </div>
+
+          <div className="experience-item">
+            <h3>Software Developer · Marlabs Inc.</h3>
+            <p className="experience-meta">Piscataway, NJ · Jul 2020 – May 2021</p>
+            <ul>
+              <li>
+                Built a real-time stock platform with Java 11, Spring Boot, WebSockets, and MySQL.
+              </li>
+              <li>
+                Designed microservices with Spring Cloud + Kubernetes for blue/green releases.
+              </li>
+              <li>
+                Implemented Kafka-based pipelines processing tens of thousands of messages per second.
+              </li>
+            </ul>
+          </div>
         </Section>
+
 
         <ProjectsSection />
 
