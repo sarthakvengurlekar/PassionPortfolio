@@ -36,6 +36,8 @@ function App() {
           </p>
         </Section>
 
+        <div className="pixel-divider"></div>
+
         <Section id="experience" title="Experience">
           <div className="experience-item">
             <h3>Backend Software Engineer – R&amp;D · WOLFFKRAN</h3>
@@ -102,8 +104,11 @@ function App() {
           </div>
         </Section>
 
+        <div className="pixel-divider"></div>
 
         <ProjectsSection />
+
+        <div className="pixel-divider"></div>
 
         {/* Contact section */}
         <Section id="contact" className="section">
@@ -117,6 +122,9 @@ function App() {
             </a>
           </p>
         </Section>
+
+        <div className="pixel-divider"></div>
+
       </main>
 
       <Footer />

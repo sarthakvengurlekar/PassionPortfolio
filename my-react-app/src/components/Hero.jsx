@@ -1,67 +1,54 @@
 // src/components/Hero.jsx
+import PixelBackground from './PixelBackground'
+
 
 function Hero() {
+  const scrollTo = (id) => {
+    const el = document.getElementById(id)
+    if (el) el.scrollIntoView({ behavior: "smooth" })
+  }
+
   return (
-    <section className="hero">
-      <p className="hero-intro">Hello, I&apos;m</p>
-      <h1 className="hero-name">Sarthak Sachin Vengurlekar</h1>
+    <section className="hero scanlines">
+      <PixelBackground />
+      <div className="hero-inner">
 
-      <h2 className="hero-title">
-        Backend Engineer &amp; Aspiring Game Creator
-      </h2>
+        <h1 className="hero-name">Hi, I&apos;m Sarthak Vengurlekar</h1>
+        <h2 className="hero-title hero-title-main">
+          Welcome to my playground.
+        </h2>
 
-      <p className="hero-subtitle">
-        Spring Boot · Kubernetes · AWS · Microservices · React · Node.js
-      </p>
+        <p className="hero-text hero-text-sub">
+          A little corner of the internet where I build backend systems, games,
+          and quirky side projects.
+        </p>
 
-      <p className="hero-meta">
-        Dubai, UAE ·{' '}
-        <a href="https://sarthakvengurlekar10@gmail.com">
-          sarthakvengurlekar10@gmail.com
-        </a>{' '}
-        · +971 56 330 2286
-      </p>
+        <div className="hero-btn-row">
+          
+          {/* Primary CTA */}
+          <button 
+            className="btn primary hero-about-btn" 
+            onClick={() => scrollTo("about")}
+          >
+            About me <span className="hero-arrow">↓</span>
+          </button>
 
-      <div className="hero-links">
-        <a
-          href="https://github.com/sarthakvengurlekar"
-          target="_blank"
-          rel="noreferrer"
-        >
-          GitHub
-        </a>
-        <span>.</span>
-        <a
-          href="https://www.linkedin.com/in/sarthak-vengurlekar/"
-          target="_blank"
-          rel="noreferrer"
-        >
-          LinkedIn
-        </a>
-        <span>.</span>
-        <a
-          href="https://sarthakvengurlekar.github.io/"
-          target="_blank"
-          rel="noreferrer"
-        >
-          Old Portfolio
-        </a>
-      </div>
-      <p className="hero-text">
-        Results-driven Software Engineer with 4+ years of experience building
-        scalable backend systems, cloud-native microservices, and DevOps
-        pipelines. I enjoy working at the intersection of backend, cloud, and
-        automation — and this site is my hub for portfolio projects, games, and
-        experiments.
-      </p>
+          {/* Secondary CTAs */}
+          <button 
+            className="btn primary hero-btn" 
+            onClick={() => scrollTo("projects")}
+          >
+            Projects
+          </button>
 
-      <div className="hero-buttons">
-        <a href="#projects" className="btn primary">
-          View Projects
-        </a>
-        <a href="#contact" className="btn secondary">
-          Contact Me
-        </a>
+          <button 
+            className="btn secondary hero-btn" 
+            onClick={() => scrollTo("contact")}
+          >
+            Contact me
+          </button>
+
+        </div>
       </div>
     </section>
   )

@@ -13,6 +13,10 @@ body {
   color: #e5e7eb;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 /* Make root app span full width */
 .app {
   min-height: 100vh;
@@ -22,6 +26,18 @@ body {
 /* Ensure main content can stretch full width */
 main {
   width: 100%;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* Navigation */
@@ -58,7 +74,14 @@ main {
 /* Hero section – full width with side padding */
 .hero {
   padding: 4rem 6vw 3rem;
-  margin: 0;          /* no centering box */
+  margin: 0;
+  min-height: calc(100vh - 70px); /* full screen minus nav height-ish */
+  /* no centering box */
+  display: flex;
+  align-items: center; /* vertical center */
+  position: relative;   /* important */
+  overflow: hidden;     /* hide overflowing pixels */
+  animation: fadeInUp 0.7s ease-out both;
 }
 
 /* Hero typography */
@@ -138,6 +161,55 @@ main {
   flex-wrap: wrap;
 }
 
+.hero-inner {
+  max-width: 700px;
+  position: relative;
+  z-index: 1;
+  animation: fadeInUp 0.7s ease-out both;
+}
+
+/* reuse existing .hero-name size, so only minor tweak: */
+.hero-title-main {
+  margin-top: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+/* subtle subtitle under the two main lines */
+.hero-text-sub {
+  margin-bottom: 2.2rem;
+}
+
+/* About button + arrow */
+.hero-about-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.hero-arrow {
+  font-size: 1.1rem;
+  line-height: 1;
+  transform: translateY(1px);
+}
+
+.hero-btn-row {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.hero-about-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.hero-arrow {
+  font-size: 1.1rem;
+  transform: translateY(1px);
+}
+
+
 /* Buttons */
 .btn {
   padding: 0.75rem 1.4rem;
@@ -146,6 +218,7 @@ main {
   font-size: 0.95rem;
   border: 1px solid transparent;
   cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
 }
 
 .btn.primary {
@@ -158,12 +231,27 @@ main {
   color: #e5e7eb;
 }
 
+.btn.primary:hover {
+  transform: translateY(-1px) scale(1.03);
+  box-shadow: 0 12px 24px rgba(56, 189, 248, 0.35);
+}
+
+.btn.secondary:hover {
+  transform: translateY(-1px) scale(1.03);
+  border-color: #6b7280;
+  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.6);
+}
+
+
 /* Generic section styling – full width with side padding */
 .section {
+  position: relative;
   padding: 4rem 6vw;
-  margin: 0;  /* no max-width box */
+  margin: 0;
   border-top: 1px solid rgba(148, 163, 184, 0.15);
+  z-index: 0; /* so pseudo-element can sit above */
 }
+
 
 .section h2 {
   font-size: 1.6rem;
@@ -181,9 +269,48 @@ main {
 }
 
 /* Extra vertical separation between sections */
-.section + .section {
+.section+.section {
   margin-top: 2.5rem;
 }
+
+.section::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 10px;
+
+  /* Softer border */
+  border: 1px solid rgba(129, 140, 248, 0.25);
+
+  /* Gentle glow */
+  box-shadow:
+    0 0 6px rgba(129, 140, 248, 0.15),
+    0 0 12px rgba(79, 70, 229, 0.15);
+
+  pointer-events: none;
+  opacity: 0.35;
+  transform: scale(0.985);
+  z-index: -1;
+
+  animation: neonPulse 6s ease-in-out infinite;
+}
+
+@keyframes neonPulse {
+  0%, 100% {
+    opacity: 0.25;
+    box-shadow:
+      0 0 4px rgba(129, 140, 248, 0.12),
+      0 0 8px rgba(79, 70, 229, 0.12);
+  }
+  50% {
+    opacity: 0.45;
+    box-shadow:
+      0 0 10px rgba(129, 140, 248, 0.22),
+      0 0 18px rgba(79, 70, 229, 0.22);
+  }
+}
+
+
 
 /* Experience */
 
@@ -234,10 +361,18 @@ main {
   border: 1px solid rgba(148, 163, 184, 0.3);
   padding: 1.25rem;
   background: radial-gradient(circle at top left, #111827, #020617);
+  transition: transform 0.2s ease, box-shadow 0.25s ease, border-color 0.2s ease;
 }
 
 .project-card h3 {
   margin-bottom: 0.5rem;
+}
+
+/* hover effect */
+.project-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 35px rgba(15, 23, 42, 0.95);
+  border-color: rgba(129, 140, 248, 0.7);
 }
 
 /* Tech stack logo grid */
@@ -264,17 +399,31 @@ main {
   align-items: center;
   justify-content: center;
   gap: 0.6rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
 }
 
 .tech-logo-card img {
   width: 40px;
   height: 40px;
   object-fit: contain;
+  transition: transform 0.2s ease;
 }
 
 .tech-logo-card span {
   font-size: 0.9rem;
   color: #e5e7eb;
+}
+
+/* hover effect */
+.tech-logo-card:hover {
+  transform: translateY(-3px) scale(1.03);
+  border-color: rgba(129, 140, 248, 0.7);
+  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.9);
+  background: radial-gradient(circle at top left, #1f2937, #020617);
+}
+
+.tech-logo-card:hover img {
+  transform: scale(1.06);
 }
 
 /* Contact */
@@ -312,3 +461,58 @@ main {
     font-size: 0.85rem;
   }
 }
+
+.nav-left {
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  transition: color 0.2s ease;
+}
+
+.nav-left:hover {
+  color: #a5b4fc;
+}
+
+.hero-pixel-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  pointer-events: none;   /* so clicks go through to buttons */
+  opacity: 0.8;           /* tweak if too strong */
+}
+
+.scanlines::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(255,255,255,0.03) 0px,
+    rgba(255,255,255,0.03) 1px,
+    transparent 2px,
+    transparent 4px
+  );
+  animation: scanMove 12s linear infinite;
+}
+
+@keyframes scanMove {
+  from { transform: translateY(0); }
+  to { transform: translateY(4px); }
+}
+
+.pixel-divider {
+  width: 100%;
+  height: 6px;
+  image-rendering: pixelated;
+  background: repeating-linear-gradient(
+    90deg,
+    #6d28d9 0,
+    #6d28d9 4px,
+    #4c1d95 4px,
+    #4c1d95 8px
+  );
+  margin: 2rem 0;
+}
+
