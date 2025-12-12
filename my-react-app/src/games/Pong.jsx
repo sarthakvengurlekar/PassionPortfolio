@@ -4,12 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 function Pong() {
     const canvasRef = useRef(null);
 
-    const ballRef = useRef({
-        x: 400,
-        y: 225,
-        vx: 0,
-        vy: 0,
-    });
+    const ballsRef = useRef([]);
 
     const paddlesRef = useRef({
         leftY: 0,
@@ -96,16 +91,20 @@ function Pong() {
         function resetBall(direction = 1) {
             const { ballSpeed } = getDifficultyParams(difficultyRef.current);
 
-            ballRef.current.x = width / 2;
-            ballRef.current.y = height / 2;
-
-            // Slight random angle so it’s not perfectly horizontal
             const angle = Math.random() * 0.6 - 0.3; // -0.3 to +0.3 radians
-            ballRef.current.vx = ballSpeed * direction * Math.cos(angle);
-            ballRef.current.vy = ballSpeed * Math.sin(angle);
+
+            ballsRef.current = [
+                {
+                    x: width / 2,
+                    y: height / 2,
+                    vx: ballSpeed * direction * Math.cos(angle),
+                    vy: ballSpeed * Math.sin(angle),
+                },
+            ];
         }
 
-        function drawFrame(ball, paddles, scores) {
+
+        function drawFrame(balls, paddles, scores) {
             // ----- Clear + background -----
             ctx.clearRect(0, 0, width, height);
             ctx.fillStyle = '#020617';
@@ -139,7 +138,6 @@ function Pong() {
             // ----- Paddles -----
             ctx.fillStyle = '#e5e7eb';
 
-            // Left paddle
             ctx.fillRect(
                 paddleOffset,
                 paddles.leftY,
@@ -147,7 +145,6 @@ function Pong() {
                 paddleHeight
             );
 
-            // Right paddle (AI)
             ctx.fillRect(
                 width - paddleOffset - paddleWidth,
                 paddles.rightY,
@@ -155,18 +152,24 @@ function Pong() {
                 paddleHeight
             );
 
-            // ----- Ball -----
-            ctx.beginPath();
-            ctx.arc(ball.x, ball.y, ballRadius, 0, Math.PI * 2);
-            ctx.fill();
+            // ----- Balls -----
+            for (const ball of balls) {
+                ctx.beginPath();
+                ctx.arc(ball.x, ball.y, ballRadius, 0, Math.PI * 2);
+                ctx.fill();
+            }
         }
 
+
         function update(deltaSeconds) {
-            const ball = ballRef.current;
+            const balls = ballsRef.current;
             const paddles = paddlesRef.current;
             const scores = scoresRef.current;
 
             const paddleSpeed = 360; // player paddle speed
+            const { aiMaxSpeed: aiSpeed, aiError, aiActivationX, ballSpeed } =
+                getDifficultyParams(difficultyRef.current);
+
 
             // ----- Move left paddle from keys -----
             if (keysRef.current.up) {
@@ -182,14 +185,14 @@ function Pong() {
                 paddles.leftY = height - paddleHeight;
             }
 
-            // ----- Simple AI for right paddle -----
-            // ----- Simple AI for right paddle -----
-            const { aiMaxSpeed, aiError, aiActivationX, ballSpeed } =
-                getDifficultyParams(difficultyRef.current);
-
+            // Use the first ball as the one the AI tracks (later we can choose smarter)
+            const primaryBall = balls[0] || {
+                x: width * 0.75,
+                y: height / 2,
+            };
 
             // Only really track ball when it's on the AI side of the board
-            const ballOnAiSide = ball.x > width * aiActivationX;
+            const ballOnAiSide = primaryBall.x > width * aiActivationX;
 
             // Default target is center of screen (drift back when ball is far)
             let targetY = (height - paddleHeight) / 2;
@@ -197,7 +200,7 @@ function Pong() {
             if (ballOnAiSide) {
                 // Aim roughly at the ball but with some vertical error
                 const errorOffset = (Math.random() - 0.5) * aiError * 2; // between -aiError..+aiError
-                targetY = ball.y - paddleHeight / 2 + errorOffset;
+                targetY = primaryBall.y - paddleHeight / 2 + errorOffset;
             }
 
             let diff = targetY - paddles.rightY;
@@ -209,12 +212,11 @@ function Pong() {
 
             // Move towards target but clamp speed
             const aiMove = Math.max(
-                -aiMaxSpeed * deltaSeconds,
-                Math.min(aiMaxSpeed * deltaSeconds, diff)
+                -aiSpeed * deltaSeconds,
+                Math.min(aiSpeed * deltaSeconds, diff)
             );
 
             paddles.rightY += aiMove;
-
 
             // Clamp right paddle inside screen
             if (paddles.rightY < 0) paddles.rightY = 0;
@@ -222,88 +224,96 @@ function Pong() {
                 paddles.rightY = height - paddleHeight;
             }
 
-            // ----- Move ball -----
-            ball.x += ball.vx * deltaSeconds;
-            ball.y += ball.vy * deltaSeconds;
+            let scoredDirection = 0; // -1 = left scores, +1 = right scores
 
-            // ----- Bounce off top/bottom -----
-            if (ball.y - ballRadius < 0) {
-                ball.y = ballRadius;
-                ball.vy *= -1;
-            } else if (ball.y + ballRadius > height) {
-                ball.y = height - ballRadius;
-                ball.vy *= -1;
+            for (const ball of balls) {
+                // ----- Move ball -----
+                ball.x += ball.vx * deltaSeconds;
+                ball.y += ball.vy * deltaSeconds;
+
+                // ----- Bounce off top/bottom -----
+                if (ball.y - ballRadius < 0) {
+                    ball.y = ballRadius;
+                    ball.vy *= -1;
+                } else if (ball.y + ballRadius > height) {
+                    ball.y = height - ballRadius;
+                    ball.vy *= -1;
+                }
+
+                // ----- Paddle collision: left (angled) -----
+                const leftPaddleX = paddleOffset;
+                const leftPaddleRight = leftPaddleX + paddleWidth;
+
+                if (
+                    ball.vx < 0 && // moving left
+                    ball.x - ballRadius <= leftPaddleRight &&
+                    ball.x - ballRadius >= leftPaddleX && // overlap in X
+                    ball.y >= paddles.leftY &&
+                    ball.y <= paddles.leftY + paddleHeight // overlap in Y
+                ) {
+                    // Snap ball just outside the paddle to avoid sticking
+                    ball.x = leftPaddleRight + ballRadius;
+
+                    // Compute hit position relative to paddle center (-1 .. +1)
+                    const paddleCenterY = paddles.leftY + paddleHeight / 2;
+                    let relativeY =
+                        (ball.y - paddleCenterY) / (paddleHeight / 2); // -1 at top, +1 at bottom
+                    relativeY = Math.max(-1, Math.min(1, relativeY));
+
+                    const maxBounceAngle = (60 * Math.PI) / 180; // 60 degrees
+                    const bounceAngle = relativeY * maxBounceAngle;
+
+                    const direction = 1; // ball goes to the right after hitting left paddle
+
+                    ball.vx = ballSpeed * Math.cos(bounceAngle) * direction;
+                    ball.vy = ballSpeed * Math.sin(bounceAngle);
+                }
+
+                // ----- Paddle collision: right (angled AI) -----
+                const rightPaddleX = width - paddleOffset - paddleWidth;
+                const rightPaddleLeft = rightPaddleX;
+
+                if (
+                    ball.vx > 0 && // moving right
+                    ball.x + ballRadius >= rightPaddleLeft &&
+                    ball.x + ballRadius <= rightPaddleLeft + paddleWidth &&
+                    ball.y >= paddles.rightY &&
+                    ball.y <= paddles.rightY + paddleHeight
+                ) {
+                    // Snap ball just outside the paddle
+                    ball.x = rightPaddleLeft - ballRadius;
+
+                    const paddleCenterY = paddles.rightY + paddleHeight / 2;
+                    let relativeY =
+                        (ball.y - paddleCenterY) / (paddleHeight / 2);
+                    relativeY = Math.max(-1, Math.min(1, relativeY));
+
+                    const maxBounceAngle = (60 * Math.PI) / 180;
+                    const bounceAngle = relativeY * maxBounceAngle;
+
+                    const direction = -1; // ball goes to the left after hitting right paddle
+
+                    ball.vx = ballSpeed * Math.cos(bounceAngle) * direction;
+                    ball.vy = ballSpeed * Math.sin(bounceAngle);
+                }
+
+                // ----- Scoring: ball passed a paddle -----
+                if (ball.x + ballRadius < 0) {
+                    scoredDirection = 1; // right scores
+                } else if (ball.x - ballRadius > width) {
+                    scoredDirection = -1; // left scores
+                }
             }
 
-            // ----- Paddle collision: left -----
-            const leftPaddleX = paddleOffset;
-            const leftPaddleRight = leftPaddleX + paddleWidth;
-
-            if (
-                ball.vx < 0 && // moving left
-                ball.x - ballRadius <= leftPaddleRight &&
-                ball.x - ballRadius >= leftPaddleX && // overlap in X
-                ball.y >= paddles.leftY &&
-                ball.y <= paddles.leftY + paddleHeight // overlap in Y
-            ) {
-                // Snap ball just outside the paddle to avoid sticking
-                ball.x = leftPaddleRight + ballRadius;
-
-                // Compute hit position relative to paddle center (-1 .. +1)
-                const paddleCenterY = paddles.leftY + paddleHeight / 2;
-                let relativeY =
-                    (ball.y - paddleCenterY) / (paddleHeight / 2); // -1 at top, +1 at bottom
-                relativeY = Math.max(-1, Math.min(1, relativeY));
-
-                const maxBounceAngle = (60 * Math.PI) / 180; // 60 degrees
-                const bounceAngle = relativeY * maxBounceAngle;
-
-                const direction = 1; // ball goes to the right after hitting left paddle
-
-                ball.vx = ballSpeed * Math.cos(bounceAngle) * direction;
-                ball.vy = ballSpeed * Math.sin(bounceAngle);
-            }
-
-
-            // ----- Paddle collision: right (AI) -----
-            const rightPaddleX = width - paddleOffset - paddleWidth;
-            const rightPaddleLeft = rightPaddleX;
-
-            if (
-                ball.vx > 0 && // moving right
-                ball.x + ballRadius >= rightPaddleLeft &&
-                ball.x + ballRadius <= rightPaddleLeft + paddleWidth &&
-                ball.y >= paddles.rightY &&
-                ball.y <= paddles.rightY + paddleHeight
-            ) {
-                // Snap ball just outside the paddle
-                ball.x = rightPaddleLeft - ballRadius;
-
-                const paddleCenterY = paddles.rightY + paddleHeight / 2;
-                let relativeY =
-                    (ball.y - paddleCenterY) / (paddleHeight / 2);
-                relativeY = Math.max(-1, Math.min(1, relativeY));
-
-                const maxBounceAngle = (60 * Math.PI) / 180;
-                const bounceAngle = relativeY * maxBounceAngle;
-
-                const direction = -1; // ball goes to the left after hitting right paddle
-
-                ball.vx = ballSpeed * Math.cos(bounceAngle) * direction;
-                ball.vy = ballSpeed * Math.sin(bounceAngle);
-            }
-
-
-            // ----- Scoring: ball passed a paddle -----
-            if (ball.x + ballRadius < 0) {
-                // Right player scores
+            // If any ball scored, reset all balls as a fresh rally
+            if (scoredDirection === 1) {
                 scores.right += 1;
-                resetBall(1); // send ball to the right next
-            } else if (ball.x - ballRadius > width) {
-                // Left player scores
+                resetBall(1);
+            } else if (scoredDirection === -1) {
                 scores.left += 1;
-                resetBall(-1); // send ball to the left next
+                resetBall(-1);
             }
+
         }
 
         function loop(timestamp) {
@@ -316,7 +326,7 @@ function Pong() {
             const deltaSeconds = deltaMs / 1000;
 
             update(deltaSeconds);
-            drawFrame(ballRef.current, paddlesRef.current, scoresRef.current);
+            drawFrame(ballsRef.current, paddlesRef.current, scoresRef.current);
 
             animationFrameIdRef.current = requestAnimationFrame(loop);
         }
@@ -344,7 +354,7 @@ function Pong() {
         window.addEventListener('keyup', handleKeyUp);
 
         // Initial static draw (no movement yet)
-        drawFrame(ballRef.current, paddlesRef.current, scoresRef.current);
+        drawFrame(ballsRef.current, paddlesRef.current, scoresRef.current);
 
         // Expose a start function for the button to call
         startGameRef.current = () => {
@@ -354,6 +364,16 @@ function Pong() {
 
             paddlesRef.current.leftY = (height - paddleHeight) / 2;
             paddlesRef.current.rightY = (height - paddleHeight) / 2;
+
+            // Start with one idle ball in the middle (no movement yet)
+            ballsRef.current = [
+                {
+                    x: width / 2,
+                    y: height / 2,
+                    vx: 0,
+                    vy: 0,
+                },
+            ];
 
             resetBall(Math.random() < 0.5 ? -1 : 1);
             lastTimeRef.current = null;
