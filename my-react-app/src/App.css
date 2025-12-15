@@ -736,4 +736,10 @@ main {
   color: #9ca3af;
 }
 
+.project-card {
+  text-decoration: none;
+  color: inherit;
+}
+
+
 

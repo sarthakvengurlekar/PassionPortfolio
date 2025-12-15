@@ -1,5 +1,7 @@
 // src/games/Pong.jsx
 import { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom'
+
 
 function Pong() {
     const canvasRef = useRef(null);
@@ -20,6 +22,12 @@ function Pong() {
         left: 0,
         right: 0,
     });
+
+    const powerUpsRef = useRef([]);           // array of active power-ups
+    const nextPowerUpSpawnAtRef = useRef(0);  // when to add the next one
+
+
+
 
     const lastTimeRef = useRef(null);
     const animationFrameIdRef = useRef(null);
@@ -56,6 +64,11 @@ function Pong() {
         const paddleHeight = 80;
         const paddleOffset = 40;
         const ballRadius = 8;
+        // power-up timing (2–3 active)
+        powerUpsRef.current = [];
+        nextPowerUpSpawnAtRef.current = performance.now() + 1200; // first extra spawn soon
+
+
 
         // Center paddles initially
         paddlesRef.current.leftY = (height - paddleHeight) / 2;
@@ -102,6 +115,17 @@ function Pong() {
                 },
             ];
         }
+
+        function spawnPowerUp() {
+            powerUpsRef.current.push({
+                x: width * 0.5 + (Math.random() * 200 - 100),
+                y: 80 + Math.random() * (height - 160),
+                r: 12,
+                type: 'multiball',
+            });
+        }
+
+
 
 
         function drawFrame(balls, paddles, scores) {
@@ -152,8 +176,32 @@ function Pong() {
                 paddleHeight
             );
 
+            // ----- Power-up orbs -----
+            for (const p of powerUpsRef.current) {
+                // outer glow
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r + 6, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(168, 85, 247, 0.18)';
+                ctx.fill();
+
+                // core
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(168, 85, 247, 0.9)';
+                ctx.fill();
+
+                // tiny highlight
+                ctx.beginPath();
+                ctx.arc(p.x - 4, p.y - 4, 3, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.75)';
+                ctx.fill();
+            }
+
+
+
             // ----- Balls -----
-            for (const ball of balls) {
+            for (let i = balls.length - 1; i >= 0; i--) {
+                const ball = balls[i];
                 ctx.beginPath();
                 ctx.arc(ball.x, ball.y, ballRadius, 0, Math.PI * 2);
                 ctx.fill();
@@ -170,6 +218,26 @@ function Pong() {
             const { aiMaxSpeed: aiSpeed, aiError, aiActivationX, ballSpeed } =
                 getDifficultyParams(difficultyRef.current);
 
+            // Spawn power-up if it's time and none is active
+            // Keep 2–3 power-ups active so they’re hittable
+            const now = performance.now();
+            const minPowerUps = 2;
+            const maxPowerUps = 3;
+
+            // If we have less than 2, top up immediately
+            while (powerUpsRef.current.length < minPowerUps) {
+                spawnPowerUp();
+            }
+
+            // If we have 2, occasionally spawn a 3rd
+            if (
+                powerUpsRef.current.length < maxPowerUps &&
+                now >= nextPowerUpSpawnAtRef.current
+            ) {
+                spawnPowerUp();
+                nextPowerUpSpawnAtRef.current = now + 3500 + Math.random() * 2500; // 3.5–6s
+            }
+
 
             // ----- Move left paddle from keys -----
             if (keysRef.current.up) {
@@ -185,11 +253,24 @@ function Pong() {
                 paddles.leftY = height - paddleHeight;
             }
 
-            // Use the first ball as the one the AI tracks (later we can choose smarter)
-            const primaryBall = balls[0] || {
-                x: width * 0.75,
-                y: height / 2,
-            };
+            // AI tracks the most "dangerous" ball:
+            // - ball moving right (towards AI)
+            // - and closest to the AI paddle (largest x)
+            let primaryBall = null;
+
+            for (const b of balls) {
+                if (b.vx > 0) {
+                    if (!primaryBall || b.x > primaryBall.x) {
+                        primaryBall = b;
+                    }
+                }
+            }
+
+            // If none are moving toward AI, track the ball closest to center-ish (or just first)
+            if (!primaryBall) {
+                primaryBall = balls[0] || { x: width * 0.75, y: height / 2 };
+            }
+
 
             // Only really track ball when it's on the AI side of the board
             const ballOnAiSide = primaryBall.x > width * aiActivationX;
@@ -224,9 +305,10 @@ function Pong() {
                 paddles.rightY = height - paddleHeight;
             }
 
-            let scoredDirection = 0; // -1 = left scores, +1 = right scores
 
-            for (const ball of balls) {
+            for (let i = balls.length - 1; i >= 0; i--) {
+                const ball = balls[i];
+
                 // ----- Move ball -----
                 ball.x += ball.vx * deltaSeconds;
                 ball.y += ball.vy * deltaSeconds;
@@ -297,21 +379,60 @@ function Pong() {
                     ball.vy = ballSpeed * Math.sin(bounceAngle);
                 }
 
-                // ----- Scoring: ball passed a paddle -----
-                if (ball.x + ballRadius < 0) {
-                    scoredDirection = 1; // right scores
-                } else if (ball.x - ballRadius > width) {
-                    scoredDirection = -1; // left scores
+                // ----- Power-up collision (multiball) -----
+                // ----- Power-up collision (multiball) -----
+                for (let pi = powerUpsRef.current.length - 1; pi >= 0; pi--) {
+                    const p = powerUpsRef.current[pi];
+
+                    const dx = ball.x - p.x;
+                    const dy = ball.y - p.y;
+                    const hitDist = ballRadius + p.r;
+
+                    if (dx * dx + dy * dy <= hitDist * hitDist) {
+                        // collected: remove this orb
+                        powerUpsRef.current.splice(pi, 1);
+
+                        if (p.type === 'multiball') {
+                            const baseAngle = Math.atan2(ball.vy, ball.vx);
+                            const speed =
+                                Math.sqrt(ball.vx * ball.vx + ball.vy * ball.vy) || ballSpeed;
+
+                            const offsets = [-0.25, 0.25]; // ~ +/-14 degrees
+                            for (const off of offsets) {
+                                balls.push({
+                                    x: ball.x,
+                                    y: ball.y,
+                                    vx: speed * Math.cos(baseAngle + off),
+                                    vy: speed * Math.sin(baseAngle + off),
+                                });
+                            }
+                        }
+
+                        break; // don’t collect multiple orbs in one frame
+                    }
                 }
+
+
+
+
+                // ----- Scoring: remove ONLY the ball that left the arena -----
+                if (ball.x + ballRadius < 0) {
+                    // exited left side -> right scores
+                    scores.right += 1;
+                    balls.splice(i, 1);
+                    continue;
+                } else if (ball.x - ballRadius > width) {
+                    // exited right side -> left scores
+                    scores.left += 1;
+                    balls.splice(i, 1);
+                    continue;
+                }
+
             }
 
-            // If any ball scored, reset all balls as a fresh rally
-            if (scoredDirection === 1) {
-                scores.right += 1;
-                resetBall(1);
-            } else if (scoredDirection === -1) {
-                scores.left += 1;
-                resetBall(-1);
+            // If ALL balls are gone, start a fresh rally (single ball)
+            if (balls.length === 0) {
+                resetBall(Math.random() < 0.5 ? -1 : 1);
             }
 
         }
@@ -376,6 +497,10 @@ function Pong() {
             ];
 
             resetBall(Math.random() < 0.5 ? -1 : 1);
+            powerUpsRef.current = [];
+            nextPowerUpSpawnAtRef.current = performance.now() + 1200;
+
+
             lastTimeRef.current = null;
 
             if (animationFrameIdRef.current) {
@@ -396,6 +521,10 @@ function Pong() {
     return (
         <section className="section pong-section">
             <div className="pong-header">
+                <Link to="/" className="pong-back">
+                    ← Back to home
+                </Link>
+
                 <p className="pong-tag">Project · Game</p>
                 <h2>Pong</h2>
                 <p>
@@ -418,15 +547,13 @@ function Pong() {
                 <div className="pong-sidebar">
                     <h3 className="pong-sidebar-title">What I&apos;m building here</h3>
                     <p className="pong-sidebar-text">
-                        This is the playground for my first browser game. Step by step,
-                        I&apos;ll add:
+                        A chaotic little Pong lab. The goal is simple: beat the bot, collect power-ups,
+                        and survive the multi-ball madness.
                     </p>
                     <ul className="pong-list">
-                        <li>Static court, paddles, and ball rendering</li>
-                        <li>A smooth game loop using <code>requestAnimationFrame</code></li>
-                        <li>Basic collision + velocity for the ball</li>
-                        <li>Keyboard controls and a simple AI opponent</li>
-                        <li>Juice: trails, screen shake, and retro glow</li>
+                        <li>Skill-based angled bounces (hit the paddle edges)</li>
+                        <li>Difficulty-based AI with human-ish mistakes</li>
+                        <li>Power-ups: multiball now, more chaos later</li>
                     </ul>
 
                     <div className="pong-controls">

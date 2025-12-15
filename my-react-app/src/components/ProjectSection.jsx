@@ -1,5 +1,7 @@
 // src/components/ProjectsSection.jsx
 import Section from './Section'
+import { Link } from 'react-router-dom'
+
 
 function ProjectsSection() {
   return (
@@ -10,18 +12,19 @@ function ProjectsSection() {
       </p>
 
       <div className="project-grid">
+
+        <Link to="/pong" className="project-card">
+          <h3>Pong Clone</h3>
+          <p>
+            A browser game built with React and canvas — angled bounces,
+            power-ups, and just enough chaos.
+          </p>
+        </Link>
         <div className="project-card">
           <h3>Chess Playground (Coming Soon)</h3>
           <p>
             Interactive tools to analyze games, practice openings, and play
             mini-puzzles.
-          </p>
-        </div>
-        <div className="project-card">
-          <h3>Pong Clone (Coming Soon)</h3>
-          <p>
-            A simple browser game built with React and canvas to learn game
-            loops and basic physics.
           </p>
         </div>
         <div className="project-card">
