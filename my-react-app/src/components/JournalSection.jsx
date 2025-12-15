@@ -1,11 +1,12 @@
 import Section from './Section'
+import { Link } from 'react-router-dom'
 
 const posts = [
   {
-    title: 'Why I Keep Coming Back to Pong',
+    title: 'My First Journal Post',
     tag: 'Game Dev',
-    teaser:
-      'Notes from rebuilding simple games to understand physics, input handling, and game loops from scratch.',
+    teaser: 'Dummy post to make sure the Journal section works end-to-end.',
+    slug: 'first-post',
   },
   {
     title: 'Backend Engineer in a Retro Arcade World',
@@ -26,8 +27,7 @@ function JournalSection() {
     <Section id="journal" title="Journal">
       <p className="section-intro">
         Long-form thoughts on games, engineering, anime, and my chess
-        journey. One day this will be a full blog — for now, it&apos;s a
-        glimpse into the things I care about.
+        journey.
       </p>
 
       <div className="journal-grid">
@@ -36,9 +36,16 @@ function JournalSection() {
             <p className="journal-tag">{post.tag}</p>
             <h3>{post.title}</h3>
             <p className="journal-teaser">{post.teaser}</p>
-            <button className="btn secondary journal-btn">
-              Read soon
-            </button>
+
+            {post.slug ? (
+              <Link className="btn secondary journal-btn" to={`/journal/${post.slug}`}>
+                Read
+              </Link>
+            ) : (
+              <button className="btn secondary journal-btn" disabled>
+                Read soon
+              </button>
+            )}
           </article>
         ))}
       </div>

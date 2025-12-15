@@ -4,8 +4,27 @@ import Hero from '../components/Hero'
 import TechStack from '../components/TechStack'
 import ProjectsSection from '../components/ProjectSection'
 import JournalSection from '../components/JournalSection'
+import { useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
+
 
 function Home() {
+
+  const location = useLocation()
+
+  useEffect(() => {
+    if (!location.hash) return
+
+    const id = location.hash.replace('#', '')
+    const el = document.getElementById(id)
+    if (!el) return
+
+    // slight delay so layout is ready
+    setTimeout(() => {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }, 0)
+  }, [location.hash])
+
   return (
     <>
       <Hero />

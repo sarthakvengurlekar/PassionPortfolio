@@ -57,6 +57,8 @@ main {
 .nav-left {
   font-weight: 700;
   letter-spacing: 0.05em;
+  text-decoration: none;
+  color: inherit;
 }
 
 .nav-right a {
@@ -240,6 +242,13 @@ main {
   transform: translateY(-1px) scale(1.03);
   border-color: #6b7280;
   box-shadow: 0 10px 20px rgba(15, 23, 42, 0.6);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 
@@ -741,5 +750,51 @@ main {
   color: inherit;
 }
 
+/* Journal section */
+
+.journal-post h1,
+.journal-post h2,
+.journal-post h3 {
+  margin: 1.2rem 0 0.6rem;
+}
+
+.journal-post p {
+  margin: 0.75rem 0;
+  line-height: 1.8;
+  color: #d1d5db;
+}
+
+.journal-post ul {
+  padding-left: 1.4rem;
+  margin: 0.75rem 0;
+}
+
+.journal-post li {
+  margin-bottom: 0.4rem;
+}
+
+.journal-post a {
+  color: #a5b4fc;
+  text-decoration: none;
+}
+
+.journal-post a:hover {
+  text-decoration: underline;
+}
+
+.journal-post code {
+  padding: 0.1rem 0.35rem;
+  border-radius: 0.35rem;
+  background: rgba(148, 163, 184, 0.15);
+}
+
+.journal-post pre {
+  margin: 1rem 0;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  overflow: auto;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  background: rgba(2, 6, 23, 0.6);
+}
 
 

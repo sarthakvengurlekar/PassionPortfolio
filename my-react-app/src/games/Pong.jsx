@@ -26,9 +26,6 @@ function Pong() {
     const powerUpsRef = useRef([]);           // array of active power-ups
     const nextPowerUpSpawnAtRef = useRef(0);  // when to add the next one
 
-
-
-
     const lastTimeRef = useRef(null);
     const animationFrameIdRef = useRef(null);
     const difficultyRef = useRef('medium');

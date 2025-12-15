@@ -1,12 +1,18 @@
+import { Link, NavLink } from 'react-router-dom'
+
 function NavBar() {
   return (
     <header className="nav">
-      <div className="nav-left">Sarthak.dev</div>
+      <Link to="/" className="nav-left">
+        Sarthak.dev
+      </Link>
+
       <nav className="nav-right">
-        <a href="#about">About</a>
-        <a href="#experience">Experience</a>
-        <a href="#projects">Projects</a>
-        <a href="#contact">Contact</a>
+        <NavLink to="/#about">About</NavLink>
+        <NavLink to="/#experience">Experience</NavLink>
+        <NavLink to="/#projects">Projects</NavLink>
+        <NavLink to="/journal">Journal</NavLink>
+        <NavLink to="/#contact">Contact</NavLink>
       </nav>
     </header>
   )
