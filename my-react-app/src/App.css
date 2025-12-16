@@ -934,5 +934,15 @@ main {
   height: 100%;
 }
 
+.viz-action {
+  margin-top: 0.9rem;
+  padding: 0.7rem 0.8rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  background: rgba(2, 6, 23, 0.55);
+  color: #d1d5db;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
 
 

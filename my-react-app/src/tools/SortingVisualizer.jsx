@@ -84,6 +84,10 @@ function SortingVisualizer() {
     // controls
     const [speed, setSpeed] = useState(70) // 0..100 (higher=faster)
 
+    const [algoStats, setAlgoStats] = useState({ comparisons: 0, swaps: 0 })
+
+    const [actionText, setActionText] = useState("Ready")
+
     const delayMs = useMemo(() => {
         // speed: 0..100 (higher = faster)
         const minDelay = 10   // fastest
@@ -104,6 +108,14 @@ function SortingVisualizer() {
         }
     }, [arr, stepIndex, steps.length])
 
+    const statusText = useMemo(() => {
+        if (isRunning) return "Running…"
+        if (steps.length > 0 && stepIndex >= steps.length) return "Completed ✓"
+        if (steps.length > 0 && stepIndex > 0) return "Paused"
+        return "Ready"
+    }, [isRunning, steps.length, stepIndex])
+
+
     // ----- helpers -----
     const stopTimer = () => {
         if (timerRef.current) {
@@ -113,6 +125,7 @@ function SortingVisualizer() {
     }
 
     const hardReset = (nextBase = baseArr) => {
+        setAlgoStats({ comparisons: 0, swaps: 0 })
         stopTimer()
         setIsRunning(false)
         setSteps([])
@@ -121,6 +134,7 @@ function SortingVisualizer() {
         setSwapPair(null)
         setSortedSet(new Set())
         setArr(nextBase.slice())
+        setActionText("Ready")
     }
 
     const buildSteps = () => {
@@ -132,6 +146,8 @@ function SortingVisualizer() {
         setActivePair(null)
         setSwapPair(null)
         setArr(baseArr.slice())
+        setAlgoStats({ comparisons: 0, swaps: 0 })
+        setActionText("Ready")
     }
 
     const applyOneStep = () => {
@@ -141,14 +157,27 @@ function SortingVisualizer() {
         setStepIndex((x) => x + 1)
 
         if (step.type === "COMPARE") {
+            const a = arr[step.i]
+            const b = arr[step.j]
+            setActionText(`Comparing i=${step.i} (${a}) and j=${step.j} (${b})`)
             setActivePair([step.i, step.j])
             setSwapPair(null)
+
+            // if you added counters:
+            setAlgoStats((s) => ({ ...s, comparisons: s.comparisons + 1 }))
+
             return true
         }
 
+
         if (step.type === "SWAP") {
+            setActionText(`Swapping i=${step.i} and j=${step.j}`)
             setActivePair(null)
             setSwapPair([step.i, step.j])
+
+            // if you added counters:
+            setAlgoStats((s) => ({ ...s, swaps: s.swaps + 1 }))
+
             setArr((prev) => {
                 const next = prev.slice()
                 const t = next[step.i]
@@ -159,7 +188,9 @@ function SortingVisualizer() {
             return true
         }
 
+
         if (step.type === "MARK_SORTED") {
+            setActionText(`Marked sorted: index ${step.i}`)
             setActivePair(null)
             setSwapPair(null)
             setSortedSet((prev) => {
@@ -170,13 +201,16 @@ function SortingVisualizer() {
             return true
         }
 
+
         if (step.type === "DONE") {
+            setActionText("Completed ✓")
             setActivePair(null)
             setSwapPair(null)
             stopTimer()
             setIsRunning(false)
             return true
         }
+
 
         return true
     }
@@ -186,12 +220,13 @@ function SortingVisualizer() {
 
         // If steps aren’t built yet, build them once.
         if (steps.length === 0) buildSteps()
-
+        setActionText("Running…")
         setIsRunning(true)
     }
 
     const onPause = () => {
         setIsRunning(false)
+        setActionText("Paused")
     }
 
     const onStep = () => {
@@ -432,7 +467,15 @@ function SortingVisualizer() {
                         <div><span>Items:</span> {stats.n}</div>
                         <div><span>Step:</span> {stats.totalSteps ? `${stats.stepIndex}/${stats.totalSteps}` : "-"}</div>
                         <div><span>Delay:</span> {delayMs}ms</div>
+                        <div><span>Comparisons:</span> {algoStats.comparisons}</div>
+                        <div><span>Swaps:</span> {algoStats.swaps}</div>
                     </div>
+
+                    <div className="viz-action">
+                        {actionText}
+                    </div>
+
+                    <p className="viz-hint">Status: {statusText}</p>
 
                     <p className="viz-hint">
                         Tip: try a reversed array like <code>[9,8,7,6,5,4,3,2,1]</code>.
