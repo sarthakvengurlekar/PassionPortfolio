@@ -797,4 +797,142 @@ main {
   background: rgba(2, 6, 23, 0.6);
 }
 
+.journal-date {
+  font-size: 0.8rem;
+  color: #9ca3af;
+  margin-bottom: 0.3rem;
+}
+
+/* =========================
+   Sorting Visualizer
+   ========================= */
+
+.viz-layout {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+  margin-top: 1.2rem;
+  width: 100%;
+}
+
+.viz-canvas-wrapper {
+  flex: 1 0 auto;
+  height: 520px;
+  border-radius: 1.25rem;
+  padding: 1.3rem;
+  background: radial-gradient(circle at top, rgba(56, 189, 248, 0.18), transparent 60%);
+  box-shadow: 0 0 40px rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(148, 163, 184, 0.45);
+}
+
+.viz-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  border-radius: 0.9rem;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  background: radial-gradient(circle at center, #020617, #020617 40%, #020617);
+}
+
+.viz-sidebar {
+  flex: 0 1 340px;
+  padding: 1.2rem 1.1rem;
+  border-radius: 0.9rem;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  background: radial-gradient(circle at top left, #111827, #020617);
+  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.9);
+}
+
+.viz-tag {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: #a5b4fc;
+  margin-bottom: 0.4rem;
+}
+
+.viz-sidebar-title {
+  font-size: 1.05rem;
+  margin-bottom: 0.8rem;
+}
+
+.viz-label {
+  display: block;
+  font-size: 0.85rem;
+  color: #cbd5e1;
+  margin-bottom: 0.45rem;
+}
+
+.viz-input {
+  width: 100%;
+  resize: vertical;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(148, 163, 184, 0.3);
+  background: rgba(2, 6, 23, 0.6);
+  color: #e5e7eb;
+  padding: 0.75rem 0.85rem;
+  line-height: 1.6;
+  outline: none;
+}
+
+.viz-input:focus {
+  border-color: rgba(129, 140, 248, 0.9);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
+.viz-error {
+  margin-top: 0.65rem;
+  padding: 0.6rem 0.7rem;
+  border-radius: 0.65rem;
+  border: 1px solid rgba(248, 113, 113, 0.35);
+  background: rgba(127, 29, 29, 0.25);
+  color: #fecaca;
+  font-size: 0.85rem;
+}
+
+.viz-btn-row {
+  display: flex;
+  gap: 0.8rem;
+  margin-top: 0.9rem;
+  flex-wrap: wrap;
+}
+
+.viz-stats {
+  margin-top: 1rem;
+  font-size: 0.85rem;
+  color: #d1d5db;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.viz-stats span {
+  color: #9ca3af;
+  margin-right: 0.35rem;
+}
+
+.viz-hint {
+  margin-top: 1.1rem;
+  font-size: 0.8rem;
+  color: #9ca3af;
+}
+
+@media (max-width: 900px) {
+  .viz-layout {
+    flex-direction: column;
+  }
+  .viz-sidebar {
+    width: 100%;
+    flex: 1 1 auto;
+  }
+  .viz-canvas-wrapper {
+    width: 100%;
+  }
+}
+
+.viz-stage {
+  width: 100%;
+  height: 100%;
+}
+
+
 

@@ -6,6 +6,8 @@ import Home from './pages/Home'
 import Pong from './games/Pong'
 import Journal from './journal/Journal'
 import JournalPost from './journal/JournalPost'
+import SortingVisualizer from './tools/SortingVisualizer'
+
 
 function App() {
   return (
@@ -18,6 +20,7 @@ function App() {
           <Route path="/pong" element={<Pong />} />
           <Route path="/journal" element={<Journal />} />
           <Route path="/journal/:slug" element={<JournalPost />} />
+          <Route path="/visualizer/sorting" element={<SortingVisualizer />} />
         </Routes>
       </main>
 

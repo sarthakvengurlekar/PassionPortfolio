@@ -377,7 +377,6 @@ function Pong() {
                 }
 
                 // ----- Power-up collision (multiball) -----
-                // ----- Power-up collision (multiball) -----
                 for (let pi = powerUpsRef.current.length - 1; pi >= 0; pi--) {
                     const p = powerUpsRef.current[pi];
 

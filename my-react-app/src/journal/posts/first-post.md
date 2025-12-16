@@ -7,7 +7,7 @@ summary: Setting up the Journal section of my portfolio.
 
 ## What is this
 
-My first ever Journal post. Writing it on VS Code using markdown. Just making sure my Journal section works end to end. If someone on the internet is reading this, please drink some water!
+My first ever Journal post. Writing it on VS Code using markdown. Just making sure my Journal section works end to end. If someone on the internet is reading this, E33 is the goat. Go play it.
 
 ## What I want this Journal to be
 
