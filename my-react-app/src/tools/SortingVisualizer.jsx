@@ -58,6 +58,39 @@ function bubbleSortSteps(inputArr) {
     return steps
 }
 
+function insertionSortSteps(inputArr) {
+    const a = inputArr.slice()
+    const steps = []
+    const n = a.length
+
+    if (n > 0) steps.push({ type: "MARK_SORTED", i: 0 })
+
+    for (let i = 1; i < n; i++) {
+        let j = i
+        // compare backwards and swap until placed
+        while (j > 0) {
+            steps.push({ type: "COMPARE", i: j - 1, j })
+
+            if (a[j - 1] > a[j]) {
+                const tmp = a[j - 1]
+                a[j - 1] = a[j]
+                a[j] = tmp
+                steps.push({ type: "SWAP", i: j - 1, j })
+                j--
+            } else {
+                break
+            }
+        }
+
+        // after placing element i, mark indices 0..i as sorted-ish
+        steps.push({ type: "MARK_SORTED", i })
+    }
+
+    steps.push({ type: "DONE" })
+    return steps
+}
+
+
 function SortingVisualizer() {
     const stageRef = useRef(null)
     const canvasRef = useRef(null)
@@ -87,6 +120,9 @@ function SortingVisualizer() {
     const [algoStats, setAlgoStats] = useState({ comparisons: 0, swaps: 0 })
 
     const [actionText, setActionText] = useState("Ready")
+
+    const [algorithm, setAlgorithm] = useState("bubble") // "bubble" | "insertion"
+
 
     const delayMs = useMemo(() => {
         // speed: 0..100 (higher = faster)
@@ -138,17 +174,21 @@ function SortingVisualizer() {
     }
 
     const buildSteps = () => {
-        // For now only bubble sort; later we’ll switch based on dropdown.
-        const s = bubbleSortSteps(baseArr)
+        let s = []
+        if (algorithm === "bubble") s = bubbleSortSteps(baseArr)
+        else if (algorithm === "insertion") s = insertionSortSteps(baseArr)
+        else s = bubbleSortSteps(baseArr)
+
         setSteps(s)
         setStepIndex(0)
         setSortedSet(new Set())
         setActivePair(null)
         setSwapPair(null)
-        setArr(baseArr.slice())
         setAlgoStats({ comparisons: 0, swaps: 0 })
         setActionText("Ready")
+        setArr(baseArr.slice())
     }
+
 
     const applyOneStep = () => {
         if (stepIndex >= steps.length) return false
@@ -257,6 +297,13 @@ function SortingVisualizer() {
         setBaseArr(next)
         hardReset(next)
     }
+
+    useEffect(() => {
+        // switching algorithms should reset the run (but keep the same base array)
+        hardReset(baseArr)
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [algorithm])
+
 
     // ----- run loop -----
     useEffect(() => {
@@ -410,6 +457,18 @@ function SortingVisualizer() {
                 <div className="viz-sidebar">
                     <div className="viz-tag">Tool</div>
                     <h3 className="viz-sidebar-title">Controls</h3>
+
+                    <label className="viz-label">Algorithm</label>
+                    <select
+                        className="viz-select"
+                        value={algorithm}
+                        onChange={(e) => setAlgorithm(e.target.value)}
+                        disabled={isRunning}
+                    >
+                        <option value="bubble">Bubble Sort</option>
+                        <option value="insertion">Insertion Sort</option>
+                    </select>
+
 
                     <label className="viz-label">Input array</label>
                     <textarea
