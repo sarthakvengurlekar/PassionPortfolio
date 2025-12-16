@@ -42,7 +42,7 @@ function Hero() {
           </button>
 
           <button 
-            className="btn primary hero-btn" 
+            className="btn secondary hero-btn" 
             onClick={() => scrollTo("contact")}
           >
             Contact me
