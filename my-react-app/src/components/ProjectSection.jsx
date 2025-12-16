@@ -7,7 +7,7 @@ function ProjectsSection() {
   return (
     <Section id="projects" title="Projects">
       <p>
-        This section will host my passion projects — online chess tools, Pong,
+        This section will host my passion projects: Online chess tools, Pong,
         Tetris, and other games.
       </p>
 
@@ -16,7 +16,7 @@ function ProjectsSection() {
         <Link to="/pong" className="project-card">
           <h3>Pong Clone</h3>
           <p>
-            A browser game built with React and canvas — angled bounces,
+            A browser game built with React and canvas. Angled bounces,
             power-ups, and just enough chaos.
           </p>
         </Link>
@@ -24,7 +24,7 @@ function ProjectsSection() {
         <Link to="/visualizer/sorting" className="project-card">
           <h3>Algorithm Visualizer</h3>
           <p>
-            A canvas-based visual playground for sorting algorithms — step mode, stats, and custom inputs.
+            A canvas-based visual playground for sorting algorithms. Step mode, stats, and custom inputs.
           </p>
         </Link>
 
