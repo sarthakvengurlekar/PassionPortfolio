@@ -1,8 +1,18 @@
 import { Link } from 'react-router-dom'
 import { getAllPosts } from './postsIndex'
 
+function formatDate(dateStr) {
+  const d = new Date(dateStr)
+  if (Number.isNaN(d.getTime())) return '' // if invalid/missing
+  return d.toLocaleDateString('en-GB', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  })
+}
+
 export default function Journal() {
-  const posts = getAllPosts()
+  const posts = getAllPosts() // already newest first
 
   return (
     <section className="section">
@@ -15,6 +25,11 @@ export default function Journal() {
         {posts.map((post) => (
           <article key={post.slug} className="journal-card">
             <p className="journal-tag">{post.tag}</p>
+
+            {post.date ? (
+              <p className="journal-date">{formatDate(post.date)}</p>
+            ) : null}
+
             <h3>{post.title}</h3>
             <p className="journal-teaser">{post.summary}</p>
 
