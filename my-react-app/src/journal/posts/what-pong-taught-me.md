@@ -3,6 +3,7 @@ title: What Building Pong Taught Me About Game Loops
 date: 2025-12-17
 tag: Game Dev
 summary: I finally understood what a game loop is.
+cover: /journal/pong-game-loops/pong.png
 ---
 
 ## Why Pong?

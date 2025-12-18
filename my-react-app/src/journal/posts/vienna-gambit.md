@@ -3,6 +3,7 @@ title: My Go-To Opening as White
 date: 2015-12-16
 tag: Chess
 summary: An imperfect guide to the Vienna opening from a 1200 ELO perspective.
+cover: /journal/vienna/vienna.png
 ---
 
 It's the Vienna.

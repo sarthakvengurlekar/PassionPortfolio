@@ -90,6 +90,39 @@ function insertionSortSteps(inputArr) {
     return steps
 }
 
+function selectionSortSteps(inputArr) {
+    const a = inputArr.slice()
+    const steps = []
+    const n = a.length
+
+    for (let i = 0; i < n; i++) {
+        let min = i
+        steps.push({ type: "MARK_MIN", i: min })
+
+        for (let j = i + 1; j < n; j++) {
+            steps.push({ type: "COMPARE", i: min, j })
+
+            if (a[j] < a[min]) {
+                min = j
+                steps.push({ type: "MARK_MIN", i: min })
+            }
+        }
+
+        if (min !== i) {
+            const tmp = a[i]
+            a[i] = a[min]
+            a[min] = tmp
+            steps.push({ type: "SWAP", i, j: min })
+        }
+
+        steps.push({ type: "MARK_SORTED", i })
+    }
+
+    steps.push({ type: "DONE" })
+    return steps
+}
+
+
 
 function SortingVisualizer() {
     const stageRef = useRef(null)
@@ -123,6 +156,8 @@ function SortingVisualizer() {
 
     const [algorithm, setAlgorithm] = useState("bubble") // "bubble" | "insertion"
 
+    const [minIndex, setMinIndex] = useState(null)
+
 
     const delayMs = useMemo(() => {
         // speed: 0..100 (higher = faster)
@@ -151,6 +186,53 @@ function SortingVisualizer() {
         return "Ready"
     }, [isRunning, steps.length, stepIndex])
 
+    const algoInfo = useMemo(() => {
+        const map = {
+            bubble: {
+                name: "Bubble Sort",
+                tagline: "Repeatedly swaps adjacent out-of-order elements.",
+                time: {
+                    best: "O(n) (with early-exit optimization)",
+                    avg: "O(n^2)",
+                    worst: "O(n^2)",
+                },
+                space: "O(1)",
+                stable: "Yes",
+                inPlace: "Yes",
+                notes: "Great for visualization. Not used in practice for large n.",
+            },
+            insertion: {
+                name: "Insertion Sort",
+                tagline: "Builds a sorted prefix by inserting each element into place.",
+                time: {
+                    best: "O(n) (nearly sorted input)",
+                    avg: "O(n^2)",
+                    worst: "O(n^2)",
+                },
+                space: "O(1)",
+                stable: "Yes",
+                inPlace: "Yes",
+                notes: "Very good for small arrays or nearly sorted data.",
+            },
+            selection: {
+                name: "Selection Sort",
+                tagline: "Repeatedly selects the smallest remaining element and places it at the front.",
+                time: {
+                    best: "O(n²)",
+                    avg: "O(n²)",
+                    worst: "O(n²)",
+                },
+                space: "O(1)",
+                stable: "No",
+                inPlace: "Yes",
+                notes: "Minimizes swaps. Useful when swaps are expensive.",
+            },
+
+        }
+
+        return map[algorithm] ?? map.bubble
+    }, [algorithm])
+
 
     // ----- helpers -----
     const stopTimer = () => {
@@ -171,12 +253,16 @@ function SortingVisualizer() {
         setSortedSet(new Set())
         setArr(nextBase.slice())
         setActionText("Ready")
+        setMinIndex(null)
+
     }
 
     const buildSteps = () => {
         let s = []
+
         if (algorithm === "bubble") s = bubbleSortSteps(baseArr)
         else if (algorithm === "insertion") s = insertionSortSteps(baseArr)
+        else if (algorithm === "selection") s = selectionSortSteps(baseArr)
         else s = bubbleSortSteps(baseArr)
 
         setSteps(s)
@@ -184,6 +270,7 @@ function SortingVisualizer() {
         setSortedSet(new Set())
         setActivePair(null)
         setSwapPair(null)
+        setMinIndex(null)
         setAlgoStats({ comparisons: 0, swaps: 0 })
         setActionText("Ready")
         setArr(baseArr.slice())
@@ -195,6 +282,15 @@ function SortingVisualizer() {
 
         const step = steps[stepIndex]
         setStepIndex((x) => x + 1)
+
+        if (step.type === "MARK_MIN") {
+            setMinIndex(step.i)
+            setActionText(`Current minimum at index ${step.i}`)
+            setActivePair(null)
+            setSwapPair(null)
+            return true
+        }
+
 
         if (step.type === "COMPARE") {
             const a = arr[step.i]
@@ -248,6 +344,7 @@ function SortingVisualizer() {
             setSwapPair(null)
             stopTimer()
             setIsRunning(false)
+            setMinIndex(null)
             return true
         }
 
@@ -375,24 +472,34 @@ function SortingVisualizer() {
                 const isActive = activePair?.includes(i)
                 const isSwap = swapPair?.includes(i)
                 const isSorted = sortedSet.has(i)
+                const isMin = minIndex === i
+
+                let top = "rgba(99, 102, 241, 0.95)"
+                let bot = "rgba(168, 85, 247, 0.75)"
+
 
                 // glow by state
                 if (isSwap) {
                     ctx.shadowColor = "rgba(56, 189, 248, 0.95)"
                     ctx.shadowBlur = 22
+                } else if (isMin) {
+                    ctx.shadowColor = "rgba(251, 191, 36, 0.9)" // amber
+                    ctx.shadowBlur = 18
                 } else if (isActive) {
                     ctx.shadowColor = "rgba(99, 102, 241, 0.85)"
                     ctx.shadowBlur = 18
                 } else if (isSorted) {
                     ctx.shadowColor = "rgba(34, 197, 94, 0.55)"
                     ctx.shadowBlur = 14
-                } else {
+                }
+                else {
                     ctx.shadowBlur = 0
                 }
 
-                // bar color by state
-                let top = "rgba(99, 102, 241, 0.95)"
-                let bot = "rgba(168, 85, 247, 0.75)"
+                if (isMin) {
+                    top = "rgba(251, 191, 36, 0.95)"
+                    bot = "rgba(245, 158, 11, 0.75)"
+                }
 
                 if (isSorted) {
                     top = "rgba(34, 197, 94, 0.85)"
@@ -439,7 +546,7 @@ function SortingVisualizer() {
 
         resize()
         return () => ro.disconnect()
-    }, [arr, activePair, swapPair, sortedSet])
+    }, [arr, activePair, swapPair, sortedSet, minIndex])
 
     return (
         <Section id="sorting-visualizer" title="Sorting Visualizer">
@@ -467,6 +574,7 @@ function SortingVisualizer() {
                     >
                         <option value="bubble">Bubble Sort</option>
                         <option value="insertion">Insertion Sort</option>
+                        <option value="selection">Selection Sort</option>
                     </select>
 
 
@@ -533,6 +641,23 @@ function SortingVisualizer() {
                     <div className="viz-action">
                         {actionText}
                     </div>
+
+                    <div className="viz-info">
+                        <div className="viz-info-title">{algoInfo.name}</div>
+                        <div className="viz-info-tagline">{algoInfo.tagline}</div>
+
+                        <div className="viz-info-grid">
+                            <div><span>Best:</span> {algoInfo.time.best}</div>
+                            <div><span>Avg:</span> {algoInfo.time.avg}</div>
+                            <div><span>Worst:</span> {algoInfo.time.worst}</div>
+                            <div><span>Space:</span> {algoInfo.space}</div>
+                            <div><span>Stable:</span> {algoInfo.stable}</div>
+                            <div><span>In-place:</span> {algoInfo.inPlace}</div>
+                        </div>
+
+                        <div className="viz-info-notes">{algoInfo.notes}</div>
+                    </div>
+
 
                     <p className="viz-hint">Status: {statusText}</p>
 

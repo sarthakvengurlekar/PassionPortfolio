@@ -3,6 +3,7 @@ title: My First Journal Post
 date: 2025-12-15
 tag: Game Dev
 summary: Setting up the Journal section of my portfolio.
+cover: /journal/first-post/cover.png
 ---
 
 ## What is this

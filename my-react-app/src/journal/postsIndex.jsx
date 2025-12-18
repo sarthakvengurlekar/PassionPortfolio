@@ -62,6 +62,7 @@ export function getAllPosts() {
       date: data.date || '',
       tag: data.tag || 'Journal',
       summary: data.summary || '',
+      cover: data.cover || '',
       _dateTs: parseDate(data.date || ''),
     }
   })

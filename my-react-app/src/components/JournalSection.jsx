@@ -13,6 +13,9 @@ function JournalSection() {
       <div className="journal-grid">
         {posts.map((post) => (
           <article key={post.slug} className="journal-card">
+            {post.cover ? (
+              <img className="journal-cover" src={post.cover} alt={post.title} loading="lazy" />
+            ) : null}
             <p className="journal-tag">{post.tag}</p>
 
             <p className="journal-date">

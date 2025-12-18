@@ -529,6 +529,10 @@ main {
   margin: 2rem 0;
 }
 
+/* =========================
+   Journal section
+   ========================= */
+
 .journal-grid {
   margin-top: 1.5rem;
   display: grid;
@@ -577,6 +581,32 @@ main {
   padding-inline: 1.1rem;
   font-size: 0.85rem;
 }
+
+/* Cover image on cards */
+.journal-cover {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  margin-bottom: 0.9rem;
+}
+
+/* Cover image on the post page */
+.journal-post-cover {
+  display: block;
+  width: 100%;
+  max-width: 520px;          /* controls size */
+  height: auto;
+  object-fit: contain;
+  margin: 1.5rem auto 2rem;  /* center it */
+  border-radius: 0.75rem;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  background: rgba(2, 6, 23, 0.6);
+}
+
+
+
 
 .section h2 {
   font-size: 1.6rem;
@@ -963,5 +993,47 @@ main {
   border-color: rgba(129, 140, 248, 0.9);
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
 }
+
+.viz-info {
+  margin-top: 1rem;
+  padding: 0.9rem 0.9rem;
+  border-radius: 0.9rem;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  background: radial-gradient(circle at top left, rgba(99, 102, 241, 0.12), rgba(2, 6, 23, 0.55));
+}
+
+.viz-info-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.viz-info-tagline {
+  font-size: 0.85rem;
+  color: #cbd5e1;
+  opacity: 0.9;
+  margin-bottom: 0.75rem;
+  line-height: 1.5;
+}
+
+.viz-info-grid {
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.84rem;
+  color: #d1d5db;
+}
+
+.viz-info-grid span {
+  color: #9ca3af;
+  margin-right: 0.35rem;
+}
+
+.viz-info-notes {
+  margin-top: 0.75rem;
+  font-size: 0.8rem;
+  color: #9ca3af;
+  line-height: 1.55;
+}
+
 
 
