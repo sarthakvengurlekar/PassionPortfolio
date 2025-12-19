@@ -28,13 +28,13 @@ function ProjectsSection() {
           </p>
         </Link>
 
-        <div className="project-card">
-          <h3>Chess Playground (Coming Soon)</h3>
+        <Link to="/tools/pixel" className="project-card">
+          <h3>Pixel Art Sandbox</h3>
           <p>
-            Interactive tools to analyze games, practice openings, and play
-            mini-puzzles.
+            Draw pixel art with a palette, eraser, grid toggle, and export-ready canvas.
           </p>
-        </div>
+        </Link>
+
 
       </div>
     </Section>

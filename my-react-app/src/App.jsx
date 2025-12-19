@@ -7,7 +7,7 @@ import Pong from './games/Pong'
 import Journal from './journal/Journal'
 import JournalPost from './journal/JournalPost'
 import SortingVisualizer from './tools/SortingVisualizer'
-
+import PixelArtSandbox from './tools/PixelArtSandbox'
 
 function App() {
   return (
@@ -21,6 +21,7 @@ function App() {
           <Route path="/journal" element={<Journal />} />
           <Route path="/journal/:slug" element={<JournalPost />} />
           <Route path="/visualizer/sorting" element={<SortingVisualizer />} />
+          <Route path="/tools/pixel" element={<PixelArtSandbox />} />
         </Routes>
       </main>
 
