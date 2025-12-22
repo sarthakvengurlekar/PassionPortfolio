@@ -263,7 +263,7 @@ main {
 /* Generic section styling – full width with side padding */
 .section {
   position: relative;
-  padding: 4rem 6vw;
+  padding: 4rem clamp(16px, 6vw, 72px);
   margin: 0;
   border-top: 1px solid rgba(148, 163, 184, 0.15);
   z-index: 0;
@@ -863,6 +863,10 @@ main {
   width: 100%;
 }
 
+.viz-layout > * {
+  min-width: 0;
+}
+
 .viz-canvas-wrapper {
   flex: 1 0 auto;
   height: 520px;
@@ -871,6 +875,7 @@ main {
   background: radial-gradient(circle at top, rgba(56, 189, 248, 0.18), transparent 60%);
   box-shadow: 0 0 40px rgba(15, 23, 42, 0.9);
   border: 1px solid rgba(148, 163, 184, 0.45);
+  min-width: 0;
 }
 
 .viz-canvas {
@@ -883,7 +888,8 @@ main {
 }
 
 .viz-sidebar {
-  flex: 0 1 340px;
+  flex: 0 0 clamp(280px, 28vw, 360px);
+  max-width: 100%;
   padding: 1.2rem 1.1rem;
   border-radius: 0.9rem;
   border: 1px solid rgba(148, 163, 184, 0.35);
