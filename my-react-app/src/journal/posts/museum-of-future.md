@@ -20,5 +20,7 @@ The remaining floors felt more like carefully packaged gimmicks than meaningful 
 
 For a place built around the idea of “the future,” I expected bolder ideas, stronger storytelling, and more imagination.
 
-**Final rating: 4/10.**  
-They could have done a lot more with such a powerful theme, but it ultimately fell short.
+**Final rating: 5/10.**  
+They could have done a lot more with such a powerful theme, it was fun but it ultimately fell short.
+
+We got home and had killer biryani which was the best way to end our evening.
