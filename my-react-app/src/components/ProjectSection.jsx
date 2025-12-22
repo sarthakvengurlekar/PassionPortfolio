@@ -7,7 +7,7 @@ function ProjectsSection() {
   return (
     <Section id="projects" title="Projects">
       <p>
-        This section will host my passion projects: Online chess tools, Pong,
+        This section will host my projects and experiments: Online chess tools, Pong,
         Tetris, and other games.
       </p>
 
