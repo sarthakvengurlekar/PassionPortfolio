@@ -2,7 +2,7 @@
 title: A quick review of Hades 2
 date: 2025-12-23
 tag: Gaming
-summary: My toughts on Hades 2 after 100 hours
+summary: My thoughts on Hades 2 after 100 hours
 cover: /journal/hades2/hades2.webp
 ---
 
